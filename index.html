@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CashBook">
+  <title>Cash & Bank Book</title>
+  <style>
+    :root { --primary: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000000; --green: #34c759; --red: #ff3b30; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background: var(--bg); padding: 16px; padding-bottom: 40px; color: var(--text); }
+    h2, h3 { margin: 0 0 12px 0; }
+    .card { background: var(--card); border-radius: 14px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .balances { display: flex; gap: 12px; }
+    .bal-box { flex: 1; background: #f9f9fb; padding: 12px; border-radius: 10px; text-align: center; border: 1px solid #e5e5ea; }
+    .bal-title { font-size: 12px; color: #8e8e93; font-weight: 600; text-transform: uppercase; }
+    .bal-amount { font-size: 18px; font-weight: 700; margin-top: 4px; }
+    .form-group { margin-bottom: 12px; }
+    label { font-size: 12px; color: #6c6c70; font-weight: 600; display: block; margin-bottom: 4px; text-transform: uppercase; }
+    input, select { width: 100%; padding: 12px; border: 1px solid #c6c6c8; border-radius: 10px; font-size: 16px; box-sizing: border-box; background: #fff; }
+    button { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; }
+    button:active { opacity: 0.8; }
+    .tx-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e5e5ea; }
+    .tx-item:last-child { border-bottom: none; }
+    .income { color: var(--green); font-weight: 700; }
+    .expense { color: var(--red); font-weight: 700; }
+    .btn-del { background: none; border: none; color: #c7c7cc; font-size: 18px; padding: 0 0 0 8px; width: auto; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="balances">
+      <div class="bal-box">
+        <div class="bal-title">Cash Balance</div>
+        <div class="bal-amount" id="cashBal">₹0.00</div>
+      </div>
+      <div class="bal-box">
+        <div class="bal-title">Bank Balance</div>
+        <div class="bal-amount" id="bankBal">₹0.00</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>New Transaction</h3>
+    <div class="form-group">
+      <label>Description / Party</label>
+      <input id="title" placeholder="e.g. Purchase, Rent, Payment" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>Amount (₹)</label>
+      <input id="amount" type="number" inputmode="decimal" placeholder="0.00">
+    </div>
+    <div class="form-group">
+      <label>Account</label>
+      <select id="account">
+        <option value="Cash">Cash Account</option>
+        <option value="Bank">Bank Account</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Entry Type</label>
+      <select id="type">
+        <option value="in">Receipt / Cash In (+)</option>
+        <option value="out">Payment / Cash Out (-)</option>
+      </select>
+    </div>
+    <button onclick="addEntry()">Save Entry</button>
+  </div>
+
+  <div class="card">
+    <h3>History</h3>
+    <div id="txList">No transactions recorded yet.</div>
+  </div>
+
+  <script>
+    let entries = JSON.parse(localStorage.getItem('entries_data') || '[]');
+
+    function render() {
+      const list = document.getElementById('txList');
+      if (entries.length === 0) {
+        list.innerHTML = '<p style="color:#8e8e93; font-size:14px; margin:0;">No transactions recorded yet.</p>';
+        document.getElementById('cashBal').innerText = '₹0.00';
+        document.getElementById('bankBal').innerText = '₹0.00';
+        return;
+      }
+
+      list.innerHTML = '';
+      let cash = 0, bank = 0;
+
+      entries.slice().reverse().forEach((e, revIdx) => {
+        const actualIdx = entries.length - 1 - revIdx;
+        const val = parseFloat(e.amount);
+        const signed = e.type === 'in' ? val : -val;
+        if (e.account === 'Cash') cash += signed;
+        if (e.account === 'Bank') bank += signed;
+
+        const dateStr = new Date(e.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+
+        list.innerHTML += `
+          <div class="tx-item">
+            <div>
+              <strong>${e.title}</strong>
+              <div style="font-size: 12px; color: #8e8e93; margin-top: 2px;">${e.account} • ${dateStr}</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="${e.type === 'in' ? 'income' : 'expense'}">
+                ${e.type === 'in' ? '+' : '-'}₹${val.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              </span>
+              <button class="btn-del" onclick="deleteEntry(${actualIdx})">✕</button>
+            </div>
+          </div>`;
+      });
+
+      document.getElementById('cashBal').innerText = '₹' + cash.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      document.getElementById('bankBal').innerText = '₹' + bank.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+    }
+
+    function addEntry() {
+      const title = document.getElementById('title').value.trim();
+      const amount = parseFloat(document.getElementById('amount').value);
+      const account = document.getElementById('account').value;
+      const type = document.getElementById('type').value;
+
+      if (!title || isNaN(amount) || amount <= 0) {
+        alert('Please enter a valid title and amount.');
+        return;
+      }
+
+      entries.push({ title, amount, account, type, date: new Date().toISOString() });
+      localStorage.setItem('entries_data', JSON.stringify(entries));
+      document.getElementById('title').value = '';
+      document.getElementById('amount').value = '';
+      render();
+    }
+
+    function deleteEntry(index) {
+      if (confirm('Delete this entry?')) {
+        entries.splice(index, 1);
+        localStorage.setItem('entries_data', JSON.stringify(entries));
+        render();
+      }
+    }
+
+    render();
+  </script>
+</body>
+</html>
