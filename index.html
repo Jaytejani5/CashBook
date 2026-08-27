@@ -6,7 +6,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="CashBook">
-  <title>Cash & Bank Book Statement</title>
+  <meta name="theme-color" content="#007aff">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/5501/5501375.png">
+  <title>Account Statement</title>
   <style>
     :root { 
       --primary: #007aff; 
@@ -183,13 +186,11 @@
       border-bottom: 1px dashed #eee; 
     }
 
-    /* Print / PDF Document Layout Elements */
     .print-header { display: none; }
     .print-table { display: none; width: 100%; border-collapse: collapse; margin-top: 15px; }
     .print-table th, .print-table td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 12px; }
     .print-table th { background: #f2f2f7; font-weight: 600; }
 
-    /* Print-Only CSS Stylesheet Rules */
     @media print {
       body { background: #ffffff !important; padding: 0 !important; color: #000000 !important; }
       .no-print, .card h3, .form-group, button, .btn-action-group, .action-icons, #txList, #partyList, .search-container { display: none !important; }
@@ -201,7 +202,7 @@
         padding-bottom: 8px; 
         margin-bottom: 15px; 
       }
-      .print-header h1 { margin: 0 0 4px 0; font-size: 20px; }
+      .print-header h1 { margin: 0 0 4px 0; font-size: 20px; text-transform: uppercase; }
       .print-header p { margin: 0; font-size: 12px; color: #555; }
 
       .rep-summary { display: flex !important; gap: 10px !important; margin-bottom: 15px !important; }
@@ -217,13 +218,11 @@
 </head>
 <body>
 
-  <!-- Print Statement Header (Visible only in PDF/Print) -->
   <div class="print-header">
-    <h1>Cash & Bank Account Statement</h1>
+    <h1 id="printMainHeading">Cash & Bank Statement</h1>
     <p id="printPeriodSubtitle">Generated on Date: -</p>
   </div>
 
-  <!-- Live Balance Summary Card -->
   <div class="card no-print">
     <div class="balances">
       <div class="bal-box">
@@ -237,7 +236,6 @@
     </div>
   </div>
 
-  <!-- Entry / Edit Form Card -->
   <div class="card no-print" id="entryFormCard">
     <h3 id="formHeading">New Entry</h3>
     
@@ -277,7 +275,6 @@
     <button class="btn-cancel" id="btnCancelEdit" style="display: none;" onclick="cancelEdit()">Cancel Edit</button>
   </div>
 
-  <!-- Reporting, Export & Print Card -->
   <div class="card">
     <h3 class="no-print">Reports & Statements</h3>
     
@@ -301,7 +298,6 @@
       </div>
     </div>
 
-    <!-- Custom Date Inputs -->
     <div id="customDateRow" class="row-2 form-group no-print" style="display: none;">
       <div>
         <label>From</label>
@@ -313,7 +309,6 @@
       </div>
     </div>
 
-    <!-- Filtered Summary Metrics -->
     <div class="rep-summary">
       <div class="rep-box">
         <div style="color: var(--green);">Total In (+)</div>
@@ -329,13 +324,11 @@
       </div>
     </div>
 
-    <!-- Export & Print Action Buttons -->
     <div class="btn-action-group no-print">
       <button class="btn-export" onclick="exportToCSV()">Export CSV</button>
       <button class="btn-pdf" onclick="generatePDFStatement()">Print / PDF</button>
     </div>
 
-    <!-- Print Table Format -->
     <table class="print-table" id="printTable">
       <thead>
         <tr>
@@ -351,7 +344,6 @@
     </table>
   </div>
 
-  <!-- Data Backup & Restore Card -->
   <div class="card no-print">
     <h3>Data Backup & Restore</h3>
     <p style="font-size: 12px; color: var(--subtext); margin: 0 0 10px 0;">
@@ -364,13 +356,11 @@
     <input type="file" id="restoreFileInput" accept=".json" style="display: none;" onchange="restoreJSON(event)">
   </div>
 
-  <!-- Party-wise Summary Card -->
   <div class="card no-print">
     <h3>Party-wise Summary</h3>
     <div id="partyList">No records found for current filter.</div>
   </div>
 
-  <!-- Filtered Transaction History Card with Live Search Bar -->
   <div class="card no-print">
     <h3>Transaction History</h3>
     
@@ -391,7 +381,7 @@
 
   <script>
     let entries = JSON.parse(localStorage.getItem('entries_data') || '[]');
-    let editingIndex = -1; // -1 means adding new entry
+    let editingIndex = -1;
 
     function saveEntries() {
       localStorage.setItem('entries_data', JSON.stringify(entries));
@@ -566,7 +556,6 @@
       }
 
       if (editingIndex >= 0) {
-        // Update existing record (preserves original date)
         entries[editingIndex].account = account;
         entries[editingIndex].party = party;
         entries[editingIndex].description = description;
@@ -574,7 +563,6 @@
         entries[editingIndex].type = type;
         cancelEdit();
       } else {
-        // Create new record
         entries.push({
           account,
           party,
@@ -600,14 +588,12 @@
       document.getElementById('amount').value = item.amount;
       document.getElementById('type').value = item.type;
 
-      // Update Form UI for editing state
       document.getElementById('formHeading').innerText = 'Edit Entry';
       const submitBtn = document.getElementById('btnSubmit');
       submitBtn.innerText = 'Update Entry';
       submitBtn.classList.add('btn-update');
       document.getElementById('btnCancelEdit').style.display = 'block';
 
-      // Scroll smoothly to form
       document.getElementById('entryFormCard').scrollIntoView({ behavior: 'smooth' });
     }
 
@@ -640,12 +626,21 @@
 
     function generatePDFStatement() {
       const period = document.getElementById('filterPeriod').options[document.getElementById('filterPeriod').selectedIndex].text;
-      const acc = document.getElementById('filterAccount').options[document.getElementById('filterAccount').selectedIndex].text;
+      const accValue = document.getElementById('filterAccount').value;
       const search = (document.getElementById('searchQuery').value || '').trim();
       const dateStr = new Date().toLocaleDateString('en-IN');
       
+      let headingText = "Cash & Bank Combined Statement";
+      if (accValue === "Cash") {
+        headingText = "Cash Statement";
+      } else if (accValue === "Bank") {
+        headingText = "Bank Statement";
+      }
+      document.getElementById('printMainHeading').innerText = headingText;
+
       const searchNote = search ? ` | Search: "${search}"` : '';
-      document.getElementById('printPeriodSubtitle').innerText = `Period: ${period} | Account: ${acc}${searchNote} | Generated on: ${dateStr}`;
+      document.getElementById('printPeriodSubtitle').innerText = `Period: ${period} | Generated on: ${dateStr}${searchNote}`;
+      
       window.print();
     }
 
@@ -655,6 +650,11 @@
         alert('No data to export.');
         return;
       }
+
+      const accValue = document.getElementById('filterAccount').value;
+      let filenamePrefix = "CashBank";
+      if (accValue === "Cash") filenamePrefix = "Cash";
+      if (accValue === "Bank") filenamePrefix = "Bank";
 
       let csv = 'Date,Account,Party,Description,Type,Amount (INR)\n';
       filtered.forEach(e => {
@@ -669,7 +669,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `CashBook_Report_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = `${filenamePrefix}_Statement_${new Date().toISOString().slice(0, 10)}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -720,7 +720,11 @@
       event.target.value = '';
     }
 
-    // Initial load
+    // Register Service Worker for 100% Offline Capability
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration skipped', err));
+    }
+
     applyFilters();
   </script>
 </body>
