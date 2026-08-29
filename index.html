@@ -8,8 +8,9 @@
   <meta name="apple-mobile-web-app-title" content="CashBook">
   <meta name="theme-color" content="#007aff">
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/5501/5501375.png">
-  <title>Account Statement</title>
+  <link rel="apple-touch-icon" href="icon-512.png">
+  <link rel="icon" type="image/png" href="icon-512.png">
+  <title>CashBook Ledger</title>
   <style>
     :root { 
       --primary: #007aff; 
@@ -20,16 +21,31 @@
       --red: #ff3b30; 
       --orange: #ff9500;
       --subtext: #8e8e93;
+      --border: #e5e5ea;
     }
     body { 
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
       margin: 0; 
       background: var(--bg); 
       padding: 16px; 
-      padding-bottom: 50px; 
+      padding-bottom: 90px; 
       color: var(--text); 
     }
-    h2, h3, h4 { margin: 0 0 10px 0; }
+    h2, h3, h4 { margin: 0 0 12px 0; }
+    
+    /* Top Balances Card */
+    .balances { display: flex; gap: 10px; margin-bottom: 16px; }
+    .bal-box { 
+      flex: 1; 
+      background: var(--card); 
+      padding: 14px; 
+      border-radius: 14px; 
+      text-align: center; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04); 
+    }
+    .bal-title { font-size: 11px; color: var(--subtext); font-weight: 600; text-transform: uppercase; }
+    .bal-amount { font-size: 18px; font-weight: 700; margin-top: 4px; }
+    
     .card { 
       background: var(--card); 
       border-radius: 14px; 
@@ -37,48 +53,32 @@
       margin-bottom: 16px; 
       box-shadow: 0 2px 8px rgba(0,0,0,0.04); 
     }
-    .balances { display: flex; gap: 10px; }
-    .bal-box { 
-      flex: 1; 
-      background: #f9f9fb; 
-      padding: 12px; 
-      border-radius: 10px; 
-      text-align: center; 
-      border: 1px solid #e5e5ea; 
-    }
-    .bal-title { font-size: 11px; color: var(--subtext); font-weight: 600; text-transform: uppercase; }
-    .bal-amount { font-size: 17px; font-weight: 700; margin-top: 4px; }
-    
-    .rep-summary { display: flex; gap: 8px; margin-top: 10px; }
-    .rep-box { 
-      flex: 1; 
-      padding: 10px 8px; 
-      border-radius: 8px; 
-      text-align: center; 
-      background: #f9f9fb; 
-      font-size: 11px; 
-    }
-    .rep-val { font-size: 14px; font-weight: 700; margin-top: 3px; }
 
-    .form-group { margin-bottom: 12px; }
+    /* Page Navigation Views */
+    .page-view { display: none; }
+    .page-view.active { display: block; }
+
+    /* Form Styles */
+    .form-group { margin-bottom: 14px; }
     label { font-size: 11px; color: #6c6c70; font-weight: 600; display: block; margin-bottom: 4px; text-transform: uppercase; }
     input, select { 
       width: 100%; 
-      padding: 11px; 
+      padding: 12px; 
       border: 1px solid #c6c6c8; 
       border-radius: 10px; 
-      font-size: 15px; 
+      font-size: 16px; 
       box-sizing: border-box; 
       background: #fff; 
     }
-    .row-2 { display: flex; gap: 8px; }
+    .row-2 { display: flex; gap: 10px; }
     .row-2 > div { flex: 1; }
 
+    /* Search Input */
     .search-container { position: relative; margin-bottom: 12px; }
     .search-input {
       padding-left: 36px !important;
       background: #f2f2f7 !important;
-      border: 1px solid #e5e5ea !important;
+      border: 1px solid var(--border) !important;
     }
     .search-icon {
       position: absolute;
@@ -89,21 +89,20 @@
       color: var(--subtext);
       pointer-events: none;
     }
-    
+
+    /* Buttons */
     button.btn-primary { 
       width: 100%; 
       background: var(--primary); 
       color: white; 
       border: none; 
-      padding: 13px; 
+      padding: 14px; 
       border-radius: 10px; 
       font-size: 16px; 
       font-weight: 600; 
       cursor: pointer; 
     }
-    button.btn-update {
-      background: var(--orange) !important;
-    }
+    button.btn-update { background: var(--orange) !important; }
     button.btn-cancel {
       width: 100%;
       background: transparent;
@@ -117,57 +116,26 @@
     }
     .btn-action-group { display: flex; gap: 8px; margin-top: 12px; }
     button.btn-export { 
-      flex: 1;
-      background: #34c759; 
-      color: white; 
-      border: none; 
-      padding: 12px 6px; 
-      border-radius: 10px; 
-      font-size: 13px; 
-      font-weight: 600; 
-      cursor: pointer; 
+      flex: 1; background: #34c759; color: white; border: none; padding: 12px 6px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; 
     }
     button.btn-pdf { 
-      flex: 1;
-      background: #5856d6; 
-      color: white; 
-      border: none; 
-      padding: 12px 6px; 
-      border-radius: 10px; 
-      font-size: 13px; 
-      font-weight: 600; 
-      cursor: pointer; 
+      flex: 1; background: #5856d6; color: white; border: none; padding: 12px 6px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; 
     }
     button.btn-backup {
-      flex: 1;
-      background: #ff9500;
-      color: white;
-      border: none;
-      padding: 12px 6px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
+      flex: 1; background: #ff9500; color: white; border: none; padding: 12px 6px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
     }
     button.btn-restore {
-      flex: 1;
-      background: #8e8e93;
-      color: white;
-      border: none;
-      padding: 12px 6px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
+      flex: 1; background: #8e8e93; color: white; border: none; padding: 12px 6px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
     }
     button:active { opacity: 0.8; }
-    
+
+    /* Transaction List Items */
     .tx-item { 
       display: flex; 
       justify-content: space-between; 
       align-items: center; 
-      padding: 10px 0; 
-      border-bottom: 1px solid #e5e5ea; 
+      padding: 12px 0; 
+      border-bottom: 1px solid var(--border); 
     }
     .tx-item:last-child { border-bottom: none; }
     .income { color: var(--green); font-weight: 700; }
@@ -177,15 +145,59 @@
     .btn-icon { background: none; border: none; padding: 4px 6px; font-size: 16px; cursor: pointer; }
     .btn-edit { color: var(--primary); }
     .btn-del { color: #c7c7cc; }
-    
+
+    /* Summary Indicators */
+    .rep-summary { display: flex; gap: 8px; margin-top: 10px; }
+    .rep-box { 
+      flex: 1; 
+      padding: 10px 6px; 
+      border-radius: 8px; 
+      text-align: center; 
+      background: #f9f9fb; 
+      font-size: 11px; 
+    }
+    .rep-val { font-size: 14px; font-weight: 700; margin-top: 3px; }
+
     .party-row { 
       display: flex; 
       justify-content: space-between; 
-      padding: 6px 0; 
+      padding: 8px 0; 
       font-size: 13px; 
-      border-bottom: 1px dashed #eee; 
+      border-bottom: 1px dashed var(--border); 
     }
 
+    /* Fixed Bottom Tab Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border-top: 1px solid #d1d1d6;
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0 20px 0;
+      z-index: 1000;
+    }
+    .nav-item {
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--subtext);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      width: 33%;
+    }
+    .nav-item.active {
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .nav-icon { font-size: 20px; margin-bottom: 2px; }
+
+    /* Print & PDF Layout */
     .print-header { display: none; }
     .print-table { display: none; width: 100%; border-collapse: collapse; margin-top: 15px; }
     .print-table th, .print-table td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 12px; }
@@ -193,9 +205,13 @@
 
     @media print {
       body { background: #ffffff !important; padding: 0 !important; color: #000000 !important; }
-      .no-print, .card h3, .form-group, button, .btn-action-group, .action-icons, #txList, #partyList, .search-container { display: none !important; }
+      .no-print, .bottom-nav, .balances, .card h3, .form-group, button, .btn-action-group, .action-icons, #txList, #partyList, .search-container { display: none !important; }
       .card { box-shadow: none !important; border-radius: 0 !important; padding: 0 !important; margin: 0 0 20px 0 !important; border: none !important; }
       
+      .page-view { display: block !important; }
+      #pageEntry, #pageTransactions { display: none !important; }
+      #pageReports { display: block !important; }
+
       .print-header { 
         display: block !important; 
         border-bottom: 2px solid #000; 
@@ -218,173 +234,230 @@
 </head>
 <body>
 
+  <!-- Print Statement Header -->
   <div class="print-header">
     <h1 id="printMainHeading">Cash & Bank Statement</h1>
     <p id="printPeriodSubtitle">Generated on Date: -</p>
   </div>
 
-  <div class="card no-print">
-    <div class="balances">
-      <div class="bal-box">
-        <div class="bal-title">Cash in Hand</div>
-        <div class="bal-amount" id="cashBal">₹0.00</div>
-      </div>
-      <div class="bal-box">
-        <div class="bal-title">Bank Balance</div>
-        <div class="bal-amount" id="bankBal">₹0.00</div>
-      </div>
+  <!-- Persistent Balance Summary -->
+  <div class="balances no-print">
+    <div class="bal-box">
+      <div class="bal-title">Cash in Hand</div>
+      <div class="bal-amount" id="cashBal">₹0.00</div>
+    </div>
+    <div class="bal-box">
+      <div class="bal-title">Bank Balance</div>
+      <div class="bal-amount" id="bankBal">₹0.00</div>
     </div>
   </div>
 
-  <div class="card no-print" id="entryFormCard">
-    <h3 id="formHeading">New Entry</h3>
-    
-    <div class="form-group">
-      <label>Account</label>
-      <select id="account">
-        <option value="Cash">Cash Account</option>
-        <option value="Bank">Bank Account</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Party / Account Name</label>
-      <input id="party" placeholder="e.g. Ramesh Patel, Rent, Diamonds" autocomplete="off">
-    </div>
-
-    <div class="form-group">
-      <label>Description / Notes</label>
-      <input id="description" placeholder="e.g. Invoice #204, Polishing lot" autocomplete="off">
-    </div>
-
-    <div class="row-2 form-group">
-      <div>
-        <label>Amount (₹)</label>
-        <input id="amount" type="number" inputmode="decimal" placeholder="0.00">
+  <!-- ==================== PAGE 1: NEW ENTRY ==================== -->
+  <div id="pageEntry" class="page-view active">
+    <div class="card" id="entryFormCard">
+      <h3 id="formHeading">New Transaction</h3>
+      
+      <!-- 1. DATE PICKER ON TOP -->
+      <div class="form-group">
+        <label>Transaction Date</label>
+        <input type="date" id="entryDate">
       </div>
-      <div>
-        <label>Type</label>
-        <select id="type">
-          <option value="in">Receipt (+)</option>
-          <option value="out">Payment (-)</option>
-        </select>
-      </div>
-    </div>
 
-    <button class="btn-primary" id="btnSubmit" onclick="handleSubmit()">Save Entry</button>
-    <button class="btn-cancel" id="btnCancelEdit" style="display: none;" onclick="cancelEdit()">Cancel Edit</button>
-  </div>
-
-  <div class="card">
-    <h3 class="no-print">Reports & Statements</h3>
-    
-    <div class="row-2 form-group no-print">
-      <div>
-        <label>Period</label>
-        <select id="filterPeriod" onchange="toggleCustomDates(); applyFilters();">
-          <option value="all">All Time</option>
-          <option value="today">Today</option>
-          <option value="thisMonth" selected>This Month</option>
-          <option value="custom">Custom Dates</option>
-        </select>
-      </div>
-      <div>
+      <!-- 2. CASH / BANK SELECTION -->
+      <div class="form-group">
         <label>Account</label>
-        <select id="filterAccount" onchange="applyFilters()">
-          <option value="all">All (Cash + Bank)</option>
-          <option value="Cash">Cash Only</option>
-          <option value="Bank">Bank Only</option>
+        <select id="account">
+          <option value="Cash">Cash Account</option>
+          <option value="Bank">Bank Account</option>
         </select>
       </div>
-    </div>
 
-    <div id="customDateRow" class="row-2 form-group no-print" style="display: none;">
-      <div>
-        <label>From</label>
-        <input type="date" id="dateFrom" onchange="applyFilters()">
+      <!-- 3. PARTY & DESCRIPTION -->
+      <div class="form-group">
+        <label>Party / Account Name</label>
+        <input id="party" placeholder="e.g. Ramesh Patel, Rent, Diamonds" autocomplete="off">
       </div>
-      <div>
-        <label>To</label>
-        <input type="date" id="dateTo" onchange="applyFilters()">
-      </div>
-    </div>
 
-    <div class="rep-summary">
-      <div class="rep-box">
-        <div style="color: var(--green);">Total In (+)</div>
-        <div class="rep-val" id="repIn">₹0.00</div>
+      <div class="form-group">
+        <label>Description / Notes</label>
+        <input id="description" placeholder="e.g. Invoice #204, Polishing lot" autocomplete="off">
       </div>
-      <div class="rep-box">
-        <div style="color: var(--red);">Total Out (-)</div>
-        <div class="rep-val" id="repOut">₹0.00</div>
-      </div>
-      <div class="rep-box">
-        <div style="color: var(--primary);">Net Period</div>
-        <div class="rep-val" id="repNet">₹0.00</div>
-      </div>
-    </div>
 
-    <div class="btn-action-group no-print">
-      <button class="btn-export" onclick="exportToCSV()">Export CSV</button>
-      <button class="btn-pdf" onclick="generatePDFStatement()">Print / PDF</button>
-    </div>
+      <!-- 4. AMOUNT & RECEIPT/PAYMENT -->
+      <div class="row-2 form-group">
+        <div>
+          <label>Amount (₹)</label>
+          <input id="amount" type="number" inputmode="decimal" placeholder="0.00">
+        </div>
+        <div>
+          <label>Type</label>
+          <select id="type">
+            <option value="in">Receipt (+)</option>
+            <option value="out">Payment (-)</option>
+          </select>
+        </div>
+      </div>
 
-    <table class="print-table" id="printTable">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Account</th>
-          <th>Party Name</th>
-          <th>Description</th>
-          <th>Receipt (In)</th>
-          <th>Payment (Out)</th>
-        </tr>
-      </thead>
-      <tbody id="printTableBody"></tbody>
-    </table>
+      <button class="btn-primary" id="btnSubmit" onclick="handleSubmit()">Save Entry</button>
+      <button class="btn-cancel" id="btnCancelEdit" style="display: none;" onclick="cancelEdit()">Cancel Edit</button>
+    </div>
   </div>
 
-  <div class="card no-print">
-    <h3>Data Backup & Restore</h3>
-    <p style="font-size: 12px; color: var(--subtext); margin: 0 0 10px 0;">
-      Export a JSON backup to your Files app or iCloud to ensure your records are never lost.
-    </p>
-    <div class="btn-action-group">
-      <button class="btn-backup" onclick="backupJSON()">Backup Data (JSON)</button>
-      <button class="btn-restore" onclick="document.getElementById('restoreFileInput').click()">Restore Data</button>
+  <!-- ==================== PAGE 2: ALL TRANSACTIONS ==================== -->
+  <div id="pageTransactions" class="page-view">
+    <div class="card">
+      <h3>All Transactions</h3>
+      
+      <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input 
+          id="searchQuery" 
+          class="search-input" 
+          type="search" 
+          placeholder="Search party, remarks, amount..." 
+          autocomplete="off" 
+          oninput="renderLedger()"
+        >
+      </div>
+
+      <div id="txList">No transactions recorded yet.</div>
     </div>
-    <input type="file" id="restoreFileInput" accept=".json" style="display: none;" onchange="restoreJSON(event)">
   </div>
 
-  <div class="card no-print">
-    <h3>Party-wise Summary</h3>
-    <div id="partyList">No records found for current filter.</div>
-  </div>
+  <!-- ==================== PAGE 3: REPORTS & STATEMENTS ==================== -->
+  <div id="pageReports" class="page-view">
+    <div class="card">
+      <h3 class="no-print">Reports & PDF Statements</h3>
+      
+      <div class="row-2 form-group no-print">
+        <div>
+          <label>Period</label>
+          <select id="filterPeriod" onchange="toggleCustomDates(); applyFilters();">
+            <option value="all">All Time</option>
+            <option value="today">Today</option>
+            <option value="thisMonth" selected>This Month</option>
+            <option value="custom">Custom Dates</option>
+          </select>
+        </div>
+        <div>
+          <label>Account</label>
+          <select id="filterAccount" onchange="applyFilters()">
+            <option value="all">All (Cash + Bank)</option>
+            <option value="Cash">Cash Only</option>
+            <option value="Bank">Bank Only</option>
+          </select>
+        </div>
+      </div>
 
-  <div class="card no-print">
-    <h3>Transaction History</h3>
-    
-    <div class="search-container">
-      <span class="search-icon">🔍</span>
-      <input 
-        id="searchQuery" 
-        class="search-input" 
-        type="search" 
-        placeholder="Search party, remarks, amount..." 
-        autocomplete="off" 
-        oninput="applyFilters()"
-      >
+      <div id="customDateRow" class="row-2 form-group no-print" style="display: none;">
+        <div>
+          <label>From</label>
+          <input type="date" id="dateFrom" onchange="applyFilters()">
+        </div>
+        <div>
+          <label>To</label>
+          <input type="date" id="dateTo" onchange="applyFilters()">
+        </div>
+      </div>
+
+      <div class="rep-summary">
+        <div class="rep-box">
+          <div style="color: var(--green);">Total In (+)</div>
+          <div class="rep-val" id="repIn">₹0.00</div>
+        </div>
+        <div class="rep-box">
+          <div style="color: var(--red);">Total Out (-)</div>
+          <div class="rep-val" id="repOut">₹0.00</div>
+        </div>
+        <div class="rep-box">
+          <div style="color: var(--primary);">Net Period</div>
+          <div class="rep-val" id="repNet">₹0.00</div>
+        </div>
+      </div>
+
+      <div class="btn-action-group no-print">
+        <button class="btn-export" onclick="exportToCSV()">Export CSV</button>
+        <button class="btn-pdf" onclick="generatePDFStatement()">Print / PDF</button>
+      </div>
+
+      <table class="print-table" id="printTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Account</th>
+            <th>Party Name</th>
+            <th>Description</th>
+            <th>Receipt (In)</th>
+            <th>Payment (Out)</th>
+          </tr>
+        </thead>
+        <tbody id="printTableBody"></tbody>
+      </table>
     </div>
 
-    <div id="txList">No transactions recorded yet.</div>
+    <div class="card no-print">
+      <h3>Party-wise Summary</h3>
+      <div id="partyList">No records found for current filter.</div>
+    </div>
+
+    <div class="card no-print">
+      <h3>Data Backup & Restore</h3>
+      <p style="font-size: 12px; color: var(--subtext); margin: 0 0 10px 0;">
+        Save a JSON copy to your iPhone Files or iCloud to prevent data loss.
+      </p>
+      <div class="btn-action-group">
+        <button class="btn-backup" onclick="backupJSON()">Backup JSON</button>
+        <button class="btn-restore" onclick="document.getElementById('restoreFileInput').click()">Restore Data</button>
+      </div>
+      <input type="file" id="restoreFileInput" accept=".json" style="display: none;" onchange="restoreJSON(event)">
+    </div>
   </div>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav no-print">
+    <button class="nav-item active" onclick="switchPage('pageEntry', this)">
+      <span class="nav-icon">➕</span>
+      <span>New Entry</span>
+    </button>
+    <button class="nav-item" onclick="switchPage('pageTransactions', this)">
+      <span class="nav-icon">📋</span>
+      <span>Ledger</span>
+    </button>
+    <button class="nav-item" onclick="switchPage('pageReports', this)">
+      <span class="nav-icon">📊</span>
+      <span>Reports</span>
+    </button>
+  </nav>
 
   <script>
     let entries = JSON.parse(localStorage.getItem('entries_data') || '[]');
     let editingIndex = -1;
 
+    // Set today's date in entry form by default
+    function setDefaultDate() {
+      const today = new Date().toISOString().slice(0, 10);
+      document.getElementById('entryDate').value = today;
+    }
+
     function saveEntries() {
       localStorage.setItem('entries_data', JSON.stringify(entries));
+    }
+
+    /* Page Navigation Logic */
+    function switchPage(pageId, btnElement) {
+      document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+      document.getElementById(pageId).classList.add('active');
+      if (btnElement) {
+        btnElement.classList.add('active');
+      }
+
+      if (pageId === 'pageTransactions') {
+        renderLedger();
+      } else if (pageId === 'pageReports') {
+        applyFilters();
+      }
     }
 
     function toggleCustomDates() {
@@ -392,12 +465,74 @@
       document.getElementById('customDateRow').style.display = isCustom ? 'flex' : 'none';
     }
 
+    function renderOverallBalances() {
+      let cash = 0, bank = 0;
+      entries.forEach(e => {
+        const val = parseFloat(e.amount);
+        const signed = e.type === 'in' ? val : -val;
+        if (e.account === 'Cash') cash += signed;
+        if (e.account === 'Bank') bank += signed;
+      });
+      document.getElementById('cashBal').innerText = '₹' + cash.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      document.getElementById('bankBal').innerText = '₹' + bank.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+    }
+
+    /* Transactions Page Renderer */
+    function renderLedger() {
+      renderOverallBalances();
+      const list = document.getElementById('txList');
+      const search = (document.getElementById('searchQuery').value || '').trim().toLowerCase();
+
+      let displayEntries = entries.map((item, originalIdx) => ({ item, originalIdx }));
+
+      if (search) {
+        displayEntries = displayEntries.filter(({ item }) => {
+          const p = (item.party || '').toLowerCase();
+          const d = (item.description || '').toLowerCase();
+          const a = (item.account || '').toLowerCase();
+          const amt = (item.amount || '').toString();
+          return p.includes(search) || d.includes(search) || a.includes(search) || amt.includes(search);
+        });
+      }
+
+      if (displayEntries.length === 0) {
+        list.innerHTML = '<p style="color:#8e8e93; font-size:13px; margin:0;">No transactions found.</p>';
+        return;
+      }
+
+      list.innerHTML = '';
+      displayEntries.slice().reverse().forEach(({ item, originalIdx }) => {
+        const val = parseFloat(item.amount);
+        const dateStr = new Date(item.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+        const descText = item.description ? ` • ${item.description}` : '';
+
+        list.innerHTML += `
+          <div class="tx-item">
+            <div>
+              <strong>${item.party || 'Untitled'}</strong>
+              <div style="font-size: 11px; color: #8e8e93; margin-top: 2px;">
+                ${item.account}${descText} • ${dateStr}
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <span class="${item.type === 'in' ? 'income' : 'expense'}" style="margin-right: 4px;">
+                ${item.type === 'in' ? '+' : '-'}₹${val.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              </span>
+              <div class="action-icons">
+                <button class="btn-icon btn-edit" title="Edit Entry" onclick="startEdit(${originalIdx})">✎</button>
+                <button class="btn-icon btn-del" title="Delete Entry" onclick="deleteEntry(${originalIdx})">✕</button>
+              </div>
+            </div>
+          </div>`;
+      });
+    }
+
+    /* Reports Page Filtering */
     function getFilteredEntries() {
       const period = document.getElementById('filterPeriod').value;
       const acc = document.getElementById('filterAccount').value;
       const fromDate = document.getElementById('dateFrom').value;
       const toDate = document.getElementById('dateTo').value;
-      const search = (document.getElementById('searchQuery') ? document.getElementById('searchQuery').value : '').trim().toLowerCase();
 
       const now = new Date();
       const todayStr = now.toISOString().slice(0, 10);
@@ -418,70 +553,21 @@
           if (fromDate && itemDateStr < fromDate) return false;
           if (toDate && itemDateStr > toDate) return false;
         }
-
-        if (search) {
-          const matchParty = (e.party || '').toLowerCase().includes(search);
-          const matchDesc = (e.description || '').toLowerCase().includes(search);
-          const matchAcc = (e.account || '').toLowerCase().includes(search);
-          const matchAmt = (e.amount || '').toString().includes(search);
-          if (!matchParty && !matchDesc && !matchAcc && !matchAmt) return false;
-        }
-
         return true;
       });
-    }
-
-    function renderOverallBalances() {
-      let cash = 0, bank = 0;
-      entries.forEach(e => {
-        const val = parseFloat(e.amount);
-        const signed = e.type === 'in' ? val : -val;
-        if (e.account === 'Cash') cash += signed;
-        if (e.account === 'Bank') bank += signed;
-      });
-      document.getElementById('cashBal').innerText = '₹' + cash.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-      document.getElementById('bankBal').innerText = '₹' + bank.toLocaleString('en-IN', { minimumFractionDigits: 2 });
     }
 
     function applyFilters() {
       renderOverallBalances();
       const filtered = getFilteredEntries();
-
-      const txList = document.getElementById('txList');
       const printTableBody = document.getElementById('printTableBody');
 
       if (filtered.length === 0) {
-        txList.innerHTML = '<p style="color:#8e8e93; font-size:13px; margin:0;">No matching records found.</p>';
         printTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No records available.</td></tr>';
       } else {
-        txList.innerHTML = '';
         printTableBody.innerHTML = '';
-
         filtered.slice().reverse().forEach((e) => {
-          const originalIdx = entries.indexOf(e);
           const val = parseFloat(e.amount);
-          const dateStr = new Date(e.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-          const descText = e.description ? ` • ${e.description}` : '';
-
-          txList.innerHTML += `
-            <div class="tx-item">
-              <div>
-                <strong>${e.party || 'Untitled'}</strong>
-                <div style="font-size: 11px; color: #8e8e93; margin-top: 2px;">
-                  ${e.account}${descText} • ${dateStr}
-                </div>
-              </div>
-              <div style="display: flex; align-items: center; gap: 4px;">
-                <span class="${e.type === 'in' ? 'income' : 'expense'}" style="margin-right: 4px;">
-                  ${e.type === 'in' ? '+' : '-'}₹${val.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                </span>
-                <div class="action-icons">
-                  <button class="btn-icon btn-edit" title="Edit Entry" onclick="startEdit(${originalIdx})">✎</button>
-                  <button class="btn-icon btn-del" title="Delete Entry" onclick="deleteEntry(${originalIdx})">✕</button>
-                </div>
-              </div>
-            </div>`;
-
           const inAmt = e.type === 'in' ? '₹' + val.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : '-';
           const outAmt = e.type === 'out' ? '₹' + val.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : '-';
 
@@ -523,7 +609,7 @@
       const partyList = document.getElementById('partyList');
       const partyKeys = Object.keys(partyMap);
       if (partyKeys.length === 0) {
-        partyList.innerHTML = '<p style="color:#8e8e93; font-size:13px; margin:0;">No party data for this filter.</p>';
+        partyList.innerHTML = '<p style="color:#8e8e93; font-size:13px; margin:0;">No party data for this period.</p>';
       } else {
         partyList.innerHTML = '';
         partyKeys.sort().forEach(party => {
@@ -543,52 +629,67 @@
       }
     }
 
+    /* Save or Update Entry */
     function handleSubmit() {
+      const entryDateVal = document.getElementById('entryDate').value;
       const account = document.getElementById('account').value;
       const party = document.getElementById('party').value.trim();
       const description = document.getElementById('description').value.trim();
       const amount = parseFloat(document.getElementById('amount').value);
       const type = document.getElementById('type').value;
 
+      if (!entryDateVal) {
+        alert('Please select a transaction date.');
+        return;
+      }
       if (!party || isNaN(amount) || amount <= 0) {
-        alert('Please enter party name and a valid amount.');
+        alert('Please enter a party name and valid amount.');
         return;
       }
 
+      const isoDate = new Date(entryDateVal).toISOString();
+
       if (editingIndex >= 0) {
+        entries[editingIndex].date = isoDate;
         entries[editingIndex].account = account;
         entries[editingIndex].party = party;
         entries[editingIndex].description = description;
         entries[editingIndex].amount = amount;
         entries[editingIndex].type = type;
         cancelEdit();
+        alert('Entry updated successfully!');
       } else {
         entries.push({
+          date: isoDate,
           account,
           party,
           description,
           amount,
-          type,
-          date: new Date().toISOString()
+          type
         });
+        alert('Entry saved!');
       }
 
       saveEntries();
       clearForm();
-      applyFilters();
+      renderOverallBalances();
     }
 
     function startEdit(index) {
       editingIndex = index;
       const item = entries[index];
 
+      // Switch to Entry Page
+      switchPage('pageEntry', document.querySelectorAll('.nav-item')[0]);
+
+      document.getElementById('entryDate').value = item.date.slice(0, 10);
       document.getElementById('account').value = item.account;
       document.getElementById('party').value = item.party || '';
       document.getElementById('description').value = item.description || '';
       document.getElementById('amount').value = item.amount;
       document.getElementById('type').value = item.type;
 
-      document.getElementById('formHeading').innerText = 'Edit Entry';
+      document.getElementById('formHeading').innerText = 'Edit Transaction';
       const submitBtn = document.getElementById('btnSubmit');
       submitBtn.innerText = 'Update Entry';
       submitBtn.classList.add('btn-update');
@@ -600,46 +701,41 @@
     function cancelEdit() {
       editingIndex = -1;
       clearForm();
-      document.getElementById('formHeading').innerText = 'New Entry';
+      document.getElementById('formHeading').innerText = 'New Transaction';
       const submitBtn = document.getElementById('btnSubmit');
       submitBtn.innerText = 'Save Entry';
       submitBtn.classList.remove('btn-update');
       document.getElementById('btnCancelEdit').style.display = 'none';
+      setDefaultDate();
     }
 
     function clearForm() {
       document.getElementById('party').value = '';
       document.getElementById('description').value = '';
       document.getElementById('amount').value = '';
+      setDefaultDate();
     }
 
     function deleteEntry(index) {
       if (confirm('Delete this entry?')) {
-        if (editingIndex === index) {
-          cancelEdit();
-        }
+        if (editingIndex === index) cancelEdit();
         entries.splice(index, 1);
         saveEntries();
-        applyFilters();
+        renderLedger();
+        renderOverallBalances();
       }
     }
 
     function generatePDFStatement() {
       const period = document.getElementById('filterPeriod').options[document.getElementById('filterPeriod').selectedIndex].text;
       const accValue = document.getElementById('filterAccount').value;
-      const search = (document.getElementById('searchQuery').value || '').trim();
       const dateStr = new Date().toLocaleDateString('en-IN');
       
       let headingText = "Cash & Bank Combined Statement";
-      if (accValue === "Cash") {
-        headingText = "Cash Statement";
-      } else if (accValue === "Bank") {
-        headingText = "Bank Statement";
-      }
+      if (accValue === "Cash") headingText = "Cash Statement";
+      if (accValue === "Bank") headingText = "Bank Statement";
       document.getElementById('printMainHeading').innerText = headingText;
-
-      const searchNote = search ? ` | Search: "${search}"` : '';
-      document.getElementById('printPeriodSubtitle').innerText = `Period: ${period} | Generated on: ${dateStr}${searchNote}`;
+      document.getElementById('printPeriodSubtitle').innerText = `Period: ${period} | Generated on: ${dateStr}`;
       
       window.print();
     }
@@ -706,7 +802,7 @@
             if (confirm(`Found ${parsed.length} entries in backup file. Replace current ledger records?`)) {
               entries = parsed;
               saveEntries();
-              applyFilters();
+              renderOverallBalances();
               alert('Ledger restored successfully!');
             }
           } else {
@@ -720,12 +816,12 @@
       event.target.value = '';
     }
 
-    // Register Service Worker for 100% Offline Capability
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration skipped', err));
     }
 
-    applyFilters();
+    setDefaultDate();
+    renderOverallBalances();
   </script>
 </body>
 </html>
