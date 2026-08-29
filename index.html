@@ -37,7 +37,6 @@
     }
     h2, h3, h4 { margin: 0 0 12px 0; }
     
-    /* Persistent Balance Header */
     .balances { display: flex; gap: 10px; margin-bottom: 16px; }
     .bal-box { 
       flex: 1; 
@@ -58,11 +57,9 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.04); 
     }
 
-    /* Page Navigation Views */
     .page-view { display: none; }
     .page-view.active { display: block; }
 
-    /* Form Inputs - Standardized for iOS */
     .form-group { margin-bottom: 14px; width: 100%; }
     label { font-size: 11px; color: #6c6c70; font-weight: 600; display: block; margin-bottom: 5px; text-transform: uppercase; }
     
@@ -88,7 +85,6 @@
       padding-right: 32px;
     }
 
-    /* Fixed Row-2 Spacing & No-Overlap Layout */
     .row-2 { 
       display: flex; 
       gap: 12px; 
@@ -100,7 +96,6 @@
       min-width: 0; 
     }
 
-    /* Search Input */
     .search-container { position: relative; margin-bottom: 12px; }
     .search-input {
       padding-left: 36px !important;
@@ -117,7 +112,6 @@
       pointer-events: none;
     }
 
-    /* Action Buttons */
     button.btn-primary { 
       width: 100%; 
       height: 48px;
@@ -157,7 +151,6 @@
     }
     button:active { opacity: 0.8; }
 
-    /* Transaction Items */
     .tx-item { 
       display: flex; 
       justify-content: space-between; 
@@ -174,7 +167,6 @@
     .btn-edit { color: var(--primary); }
     .btn-del { color: #c7c7cc; }
 
-    /* Summary Indicators */
     .rep-summary { display: flex; gap: 8px; margin-top: 14px; }
     .rep-box { 
       flex: 1; 
@@ -195,7 +187,6 @@
       border-bottom: 1px dashed #e5e5ea; 
     }
 
-    /* Fixed Bottom Navigation */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -226,7 +217,6 @@
     }
     .nav-icon { font-size: 20px; margin-bottom: 2px; }
 
-    /* Print & PDF Layout */
     .print-header { display: none; }
     .print-table { display: none; width: 100%; border-collapse: collapse; margin-top: 15px; }
     .print-table th, .print-table td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 12px; }
@@ -286,7 +276,7 @@
     <div class="card" id="entryFormCard">
       <h3 id="formHeading">New Transaction</h3>
       
-      <!-- Date Picker on Top -->
+      <!-- Date Picker -->
       <div class="form-group">
         <label>Transaction Date</label>
         <input type="date" id="entryDate">
@@ -301,10 +291,16 @@
         </select>
       </div>
 
-      <!-- Party & Description -->
+      <!-- Party Name Input with Auto-Suggest Dropdown (Datalist) -->
       <div class="form-group">
         <label>Party / Account Name</label>
-        <input id="party" placeholder="e.g. Ramesh Patel, Rent, Diamonds" autocomplete="off">
+        <input 
+          id="party" 
+          list="partySuggestions" 
+          placeholder="Type or select existing party..." 
+          autocomplete="off"
+        >
+        <datalist id="partySuggestions"></datalist>
       </div>
 
       <div class="form-group">
@@ -312,7 +308,7 @@
         <input id="description" placeholder="e.g. Invoice #204, Polishing lot" autocomplete="off">
       </div>
 
-      <!-- Amount & Type Side-by-Side -->
+      <!-- Amount & Type -->
       <div class="row-2 form-group">
         <div>
           <label>Amount (₹)</label>
@@ -378,7 +374,6 @@
         </div>
       </div>
 
-      <!-- Custom Date Row with Clean Spacing -->
       <div id="customDateRow" class="row-2 form-group no-print" style="display: none;">
         <div>
           <label>Start Date</label>
@@ -470,6 +465,32 @@
 
     function saveEntries() {
       localStorage.setItem('entries_data', JSON.stringify(entries));
+      updatePartySuggestions();
+    }
+
+    /* Extract unique party names and populate datalist */
+    function updatePartySuggestions() {
+      const datalist = document.getElementById('partySuggestions');
+      if (!datalist) return;
+
+      const seen = new Set();
+      const uniqueParties = [];
+
+      entries.forEach(e => {
+        const name = (e.party || '').trim();
+        if (name) {
+          const lower = name.toLowerCase();
+          if (!seen.has(lower)) {
+            seen.add(lower);
+            uniqueParties.push(name);
+          }
+        }
+      });
+
+      // Sort alphabetically
+      uniqueParties.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+
+      datalist.innerHTML = uniqueParties.map(p => `<option value="${p}">`).join('');
     }
 
     function switchPage(pageId, btnElement) {
@@ -845,6 +866,7 @@
     }
 
     setDefaultDate();
+    updatePartySuggestions();
     renderOverallBalances();
   </script>
 </body>
