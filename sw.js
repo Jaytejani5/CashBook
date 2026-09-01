@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cashbook-cache-v5';
+const CACHE_NAME = 'cashbook-cache-v6';
 const ASSETS = [
   './',
   './index.html',
