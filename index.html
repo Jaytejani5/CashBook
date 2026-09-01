@@ -23,40 +23,19 @@
       --subtext: #8e8e93;
       --border: #c6c6c8;
     }
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { 
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-      margin: 0; 
-      background: var(--bg); 
-      padding: 16px; 
-      padding-bottom: 95px; 
-      color: var(--text); 
+      margin: 0; background: var(--bg); padding: 16px; padding-bottom: 95px; color: var(--text); 
     }
     h2, h3, h4 { margin: 0 0 12px 0; }
     
     .balances { display: flex; gap: 10px; margin-bottom: 16px; }
-    .bal-box { 
-      flex: 1; 
-      background: var(--card); 
-      padding: 14px; 
-      border-radius: 14px; 
-      text-align: center; 
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04); 
-    }
+    .bal-box { flex: 1; background: var(--card); padding: 14px; border-radius: 14px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
     .bal-title { font-size: 11px; color: var(--subtext); font-weight: 600; text-transform: uppercase; }
     .bal-amount { font-size: 18px; font-weight: 700; margin-top: 4px; }
     
-    .card { 
-      background: var(--card); 
-      border-radius: 14px; 
-      padding: 16px; 
-      margin-bottom: 16px; 
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04); 
-    }
-
+    .card { background: var(--card); border-radius: 14px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
     .page-view { display: none; }
     .page-view.active { display: block; }
 
@@ -64,100 +43,46 @@
     label { font-size: 11px; color: #6c6c70; font-weight: 600; display: block; margin-bottom: 5px; text-transform: uppercase; }
     
     input, select { 
-      display: block;
-      width: 100%; 
-      height: 46px;
-      min-height: 46px;
-      padding: 10px 12px; 
-      border: 1px solid var(--border); 
-      border-radius: 10px; 
-      font-size: 15px; 
-      background-color: #fff; 
-      color: var(--text);
-      -webkit-appearance: none;
-      appearance: none;
+      display: block; width: 100%; height: 46px; min-height: 46px; padding: 10px 12px; 
+      border: 1px solid var(--border); border-radius: 10px; font-size: 15px; 
+      background-color: #fff; color: var(--text); -webkit-appearance: none; appearance: none;
     }
-
     select {
       background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 12px center;
-      padding-right: 32px;
+      background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px;
     }
+    .row-2 { display: flex; gap: 12px; width: 100%; align-items: flex-start; }
+    .row-2 > div { flex: 1 1 0; min-width: 0; }
 
-    .row-2 { 
-      display: flex; 
-      gap: 12px; 
-      width: 100%;
-      align-items: flex-start;
+    /* Custom Auto-Suggest Dropdown */
+    .autocomplete-container { position: relative; }
+    .autocomplete-dropdown {
+      display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: #ffffff; border: 1px solid var(--border); border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 2000;
+      max-height: 200px; overflow-y: auto;
     }
-    .row-2 > div { 
-      flex: 1 1 0; 
-      min-width: 0; 
+    .autocomplete-item {
+      padding: 14px 12px; font-size: 15px; border-bottom: 1px solid #e5e5ea; cursor: pointer; color: var(--text);
     }
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:active { background-color: #f2f2f7; }
 
     .search-container { position: relative; margin-bottom: 12px; }
-    .search-input {
-      padding-left: 36px !important;
-      background-color: #f2f2f7 !important;
-      border: 1px solid #e5e5ea !important;
-    }
-    .search-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 14px;
-      color: var(--subtext);
-      pointer-events: none;
-    }
+    .search-input { padding-left: 36px !important; background-color: #f2f2f7 !important; border: 1px solid #e5e5ea !important; }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--subtext); pointer-events: none; }
 
-    button.btn-primary { 
-      width: 100%; 
-      height: 48px;
-      background: var(--primary); 
-      color: white; 
-      border: none; 
-      border-radius: 10px; 
-      font-size: 16px; 
-      font-weight: 600; 
-      cursor: pointer; 
-      margin-top: 4px;
-    }
+    button.btn-primary { width: 100%; height: 48px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 4px; }
     button.btn-update { background: var(--orange) !important; }
-    button.btn-cancel {
-      width: 100%;
-      background: transparent;
-      color: var(--red);
-      border: none;
-      padding: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 4px;
-    }
+    button.btn-cancel { width: 100%; background: transparent; color: var(--red); border: none; padding: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 4px; }
     .btn-action-group { display: flex; gap: 8px; margin-top: 14px; }
-    button.btn-export { 
-      flex: 1; background: #34c759; color: white; border: none; padding: 12px 6px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; 
-    }
-    button.btn-pdf { 
-      flex: 1; background: #5856d6; color: white; border: none; padding: 12px 6px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; 
-    }
-    button.btn-backup {
-      flex: 1; background: #ff9500; color: white; border: none; padding: 12px 6px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
-    }
-    button.btn-restore {
-      flex: 1; background: #8e8e93; color: white; border: none; padding: 12px 6px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
-    }
+    button.btn-export { flex: 1; background: #34c759; color: white; border: none; padding: 12px 6px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    button.btn-pdf { flex: 1; background: #5856d6; color: white; border: none; padding: 12px 6px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    button.btn-backup { flex: 1; background: #ff9500; color: white; border: none; padding: 12px 6px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    button.btn-restore { flex: 1; background: #8e8e93; color: white; border: none; padding: 12px 6px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
     button:active { opacity: 0.8; }
 
-    .tx-item { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      padding: 12px 0; 
-      border-bottom: 1px solid #e5e5ea; 
-    }
+    .tx-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e5e5ea; }
     .tx-item:last-child { border-bottom: none; }
     .income { color: var(--green); font-weight: 700; }
     .expense { color: var(--red); font-weight: 700; }
@@ -168,53 +93,14 @@
     .btn-del { color: #c7c7cc; }
 
     .rep-summary { display: flex; gap: 8px; margin-top: 14px; }
-    .rep-box { 
-      flex: 1; 
-      padding: 10px 6px; 
-      border-radius: 8px; 
-      text-align: center; 
-      background: #f9f9fb; 
-      font-size: 11px; 
-      border: 1px solid #e5e5ea;
-    }
+    .rep-box { flex: 1; padding: 10px 6px; border-radius: 8px; text-align: center; background: #f9f9fb; font-size: 11px; border: 1px solid #e5e5ea; }
     .rep-val { font-size: 14px; font-weight: 700; margin-top: 3px; }
 
-    .party-row { 
-      display: flex; 
-      justify-content: space-between; 
-      padding: 8px 0; 
-      font-size: 13px; 
-      border-bottom: 1px dashed #e5e5ea; 
-    }
+    .party-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; border-bottom: 1px dashed #e5e5ea; }
 
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #ffffff;
-      border-top: 1px solid #d1d1d6;
-      display: flex;
-      justify-content: space-around;
-      padding: 8px 0 20px 0;
-      z-index: 1000;
-    }
-    .nav-item {
-      background: none;
-      border: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: var(--subtext);
-      font-size: 11px;
-      font-weight: 500;
-      cursor: pointer;
-      width: 33%;
-    }
-    .nav-item.active {
-      color: var(--primary);
-      font-weight: 700;
-    }
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #d1d1d6; display: flex; justify-content: space-around; padding: 8px 0 20px 0; z-index: 1000; }
+    .nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; color: var(--subtext); font-size: 11px; font-weight: 500; cursor: pointer; width: 33%; }
+    .nav-item.active { color: var(--primary); font-weight: 700; }
     .nav-icon { font-size: 20px; margin-bottom: 2px; }
 
     .print-header { display: none; }
@@ -226,24 +112,15 @@
       body { background: #ffffff !important; padding: 0 !important; color: #000000 !important; }
       .no-print, .bottom-nav, .balances, .card h3, .form-group, button, .btn-action-group, .action-icons, #txList, #partyList, .search-container { display: none !important; }
       .card { box-shadow: none !important; border-radius: 0 !important; padding: 0 !important; margin: 0 0 20px 0 !important; border: none !important; }
-      
       .page-view { display: block !important; }
       #pageEntry, #pageTransactions { display: none !important; }
       #pageReports { display: block !important; }
-
-      .print-header { 
-        display: block !important; 
-        border-bottom: 2px solid #000; 
-        padding-bottom: 8px; 
-        margin-bottom: 15px; 
-      }
+      .print-header { display: block !important; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 15px; }
       .print-header h1 { margin: 0 0 4px 0; font-size: 20px; text-transform: uppercase; }
       .print-header p { margin: 0; font-size: 12px; color: #555; }
-
       .rep-summary { display: flex !important; gap: 10px !important; margin-bottom: 15px !important; }
       .rep-box { border: 1px solid #000 !important; background: #fff !important; }
       .rep-val { color: #000 !important; font-size: 14px !important; }
-
       .print-table { display: table !important; }
       .print-table th { background: #e5e5ea !important; color: #000 !important; -webkit-print-color-adjust: exact; }
       .income-print { color: #000 !important; font-weight: 600; }
@@ -253,13 +130,11 @@
 </head>
 <body>
 
-  <!-- Print Statement Header -->
   <div class="print-header">
     <h1 id="printMainHeading">Cash & Bank Statement</h1>
     <p id="printPeriodSubtitle">Generated on Date: -</p>
   </div>
 
-  <!-- Top Balance Summary -->
   <div class="balances no-print">
     <div class="bal-box">
       <div class="bal-title">Cash in Hand</div>
@@ -276,13 +151,11 @@
     <div class="card" id="entryFormCard">
       <h3 id="formHeading">New Transaction</h3>
       
-      <!-- Date Picker -->
       <div class="form-group">
         <label>Transaction Date</label>
         <input type="date" id="entryDate">
       </div>
 
-      <!-- Account Selection -->
       <div class="form-group">
         <label>Account</label>
         <select id="account">
@@ -291,16 +164,16 @@
         </select>
       </div>
 
-      <!-- Party Name Input with Auto-Suggest Dropdown (Datalist) -->
-      <div class="form-group">
+      <!-- Custom Party Name Dropdown System -->
+      <div class="form-group autocomplete-container">
         <label>Party / Account Name</label>
         <input 
+          type="text" 
           id="party" 
-          list="partySuggestions" 
           placeholder="Type or select existing party..." 
           autocomplete="off"
         >
-        <datalist id="partySuggestions"></datalist>
+        <div id="customPartyDropdown" class="autocomplete-dropdown"></div>
       </div>
 
       <div class="form-group">
@@ -308,7 +181,6 @@
         <input id="description" placeholder="e.g. Invoice #204, Polishing lot" autocomplete="off">
       </div>
 
-      <!-- Amount & Type -->
       <div class="row-2 form-group">
         <div>
           <label>Amount (₹)</label>
@@ -438,7 +310,6 @@
     </div>
   </div>
 
-  <!-- Bottom Navigation -->
   <nav class="bottom-nav no-print">
     <button class="nav-item active" onclick="switchPage('pageEntry', this)">
       <span class="nav-icon">➕</span>
@@ -457,6 +328,69 @@
   <script>
     let entries = JSON.parse(localStorage.getItem('entries_data') || '[]');
     let editingIndex = -1;
+    let uniquePartiesList = [];
+
+    // CUSTOM AUTOCOMPLETE LOGIC
+    function extractUniqueParties() {
+      const seen = new Set();
+      uniquePartiesList = [];
+      entries.forEach(e => {
+        const name = (e.party || '').trim();
+        if (name) {
+          const lower = name.toLowerCase();
+          if (!seen.has(lower)) {
+            seen.add(lower);
+            uniquePartiesList.push(name);
+          }
+        }
+      });
+      uniquePartiesList.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    }
+
+    function renderPartySuggestions() {
+      const input = document.getElementById('party');
+      const val = input.value.toLowerCase();
+      const dropdown = document.getElementById('customPartyDropdown');
+      
+      dropdown.innerHTML = '';
+      
+      const matches = uniquePartiesList.filter(p => p.toLowerCase().includes(val));
+      
+      if (matches.length > 0) {
+        matches.forEach(match => {
+          const div = document.createElement('div');
+          div.className = 'autocomplete-item';
+          div.textContent = match;
+          // Capture touch & mouse events efficiently for mobile
+          div.onmousedown = function(e) {
+            e.preventDefault(); // Prevents input blur before click registers
+            input.value = match;
+            dropdown.style.display = 'none';
+          };
+          div.ontouchstart = function(e) {
+            e.preventDefault(); 
+            input.value = match;
+            dropdown.style.display = 'none';
+          };
+          dropdown.appendChild(div);
+        });
+        dropdown.style.display = 'block';
+      } else {
+        dropdown.style.display = 'none';
+      }
+    }
+
+    // Attach Autocomplete Listeners
+    const partyInput = document.getElementById('party');
+    partyInput.addEventListener('focus', renderPartySuggestions);
+    partyInput.addEventListener('input', renderPartySuggestions);
+    
+    // Hide dropdown if tapping outside
+    document.addEventListener('click', function(e) {
+      if (e.target.id !== 'party') {
+        document.getElementById('customPartyDropdown').style.display = 'none';
+      }
+    });
 
     function setDefaultDate() {
       const today = new Date().toISOString().slice(0, 10);
@@ -465,48 +399,16 @@
 
     function saveEntries() {
       localStorage.setItem('entries_data', JSON.stringify(entries));
-      updatePartySuggestions();
-    }
-
-    /* Extract unique party names and populate datalist */
-    function updatePartySuggestions() {
-      const datalist = document.getElementById('partySuggestions');
-      if (!datalist) return;
-
-      const seen = new Set();
-      const uniqueParties = [];
-
-      entries.forEach(e => {
-        const name = (e.party || '').trim();
-        if (name) {
-          const lower = name.toLowerCase();
-          if (!seen.has(lower)) {
-            seen.add(lower);
-            uniqueParties.push(name);
-          }
-        }
-      });
-
-      // Sort alphabetically
-      uniqueParties.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
-
-      datalist.innerHTML = uniqueParties.map(p => `<option value="${p}">`).join('');
+      extractUniqueParties(); // Re-extract names when a new entry is saved
     }
 
     function switchPage(pageId, btnElement) {
       document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-
       document.getElementById(pageId).classList.add('active');
-      if (btnElement) {
-        btnElement.classList.add('active');
-      }
-
-      if (pageId === 'pageTransactions') {
-        renderLedger();
-      } else if (pageId === 'pageReports') {
-        applyFilters();
-      }
+      if (btnElement) btnElement.classList.add('active');
+      if (pageId === 'pageTransactions') renderLedger();
+      else if (pageId === 'pageReports') applyFilters();
     }
 
     function toggleCustomDates() {
@@ -580,7 +482,6 @@
       const acc = document.getElementById('filterAccount').value;
       const fromDate = document.getElementById('dateFrom').value;
       const toDate = document.getElementById('dateTo').value;
-
       const now = new Date();
       const todayStr = now.toISOString().slice(0, 10);
       const currentMonth = now.getMonth();
@@ -588,15 +489,11 @@
 
       return entries.filter(e => {
         if (acc !== 'all' && e.account !== acc) return false;
-
         const d = new Date(e.date);
         const itemDateStr = e.date.slice(0, 10);
-
-        if (period === 'today') {
-          if (itemDateStr !== todayStr) return false;
-        } else if (period === 'thisMonth') {
-          if (d.getMonth() !== currentMonth || d.getFullYear() !== currentYear) return false;
-        } else if (period === 'custom') {
+        if (period === 'today') { if (itemDateStr !== todayStr) return false; } 
+        else if (period === 'thisMonth') { if (d.getMonth() !== currentMonth || d.getFullYear() !== currentYear) return false; } 
+        else if (period === 'custom') {
           if (fromDate && itemDateStr < fromDate) return false;
           if (toDate && itemDateStr > toDate) return false;
         }
@@ -617,7 +514,6 @@
           const val = parseFloat(e.amount);
           const inAmt = e.type === 'in' ? '₹' + val.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : '-';
           const outAmt = e.type === 'out' ? '₹' + val.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : '-';
-
           printTableBody.innerHTML += `
             <tr>
               <td>${new Date(e.date).toLocaleDateString('en-IN')}</td>
@@ -637,15 +533,10 @@
         const val = parseFloat(e.amount);
         const partyKey = e.party || 'General';
         if (!partyMap[partyKey]) partyMap[partyKey] = { in: 0, out: 0, net: 0 };
-
         if (e.type === 'in') {
-          totalIn += val;
-          partyMap[partyKey].in += val;
-          partyMap[partyKey].net += val;
+          totalIn += val; partyMap[partyKey].in += val; partyMap[partyKey].net += val;
         } else {
-          totalOut += val;
-          partyMap[partyKey].out += val;
-          partyMap[partyKey].net -= val;
+          totalOut += val; partyMap[partyKey].out += val; partyMap[partyKey].net -= val;
         }
       });
 
@@ -684,14 +575,8 @@
       const amount = parseFloat(document.getElementById('amount').value);
       const type = document.getElementById('type').value;
 
-      if (!entryDateVal) {
-        alert('Please select a transaction date.');
-        return;
-      }
-      if (!party || isNaN(amount) || amount <= 0) {
-        alert('Please enter a party name and valid amount.');
-        return;
-      }
+      if (!entryDateVal) { alert('Please select a transaction date.'); return; }
+      if (!party || isNaN(amount) || amount <= 0) { alert('Please enter a party name and valid amount.'); return; }
 
       const isoDate = new Date(entryDateVal).toISOString();
 
@@ -705,14 +590,7 @@
         cancelEdit();
         alert('Entry updated successfully!');
       } else {
-        entries.push({
-          date: isoDate,
-          account,
-          party,
-          description,
-          amount,
-          type
-        });
+        entries.push({ date: isoDate, account, party, description, amount, type });
         alert('Entry saved!');
       }
 
@@ -724,7 +602,6 @@
     function startEdit(index) {
       editingIndex = index;
       const item = entries[index];
-
       switchPage('pageEntry', document.querySelectorAll('.nav-item')[0]);
 
       document.getElementById('entryDate').value = item.date.slice(0, 10);
@@ -787,10 +664,7 @@
 
     function exportToCSV() {
       const filtered = getFilteredEntries();
-      if (filtered.length === 0) {
-        alert('No data to export.');
-        return;
-      }
+      if (filtered.length === 0) { alert('No data to export.'); return; }
 
       const accValue = document.getElementById('filterAccount').value;
       let filenamePrefix = "CashBank";
@@ -817,10 +691,7 @@
     }
 
     function backupJSON() {
-      if (entries.length === 0) {
-        alert('No entries available to backup.');
-        return;
-      }
+      if (entries.length === 0) { alert('No entries available to backup.'); return; }
 
       const dataStr = JSON.stringify(entries, null, 2);
       const blob = new Blob([dataStr], { type: 'application/json' });
@@ -850,12 +721,8 @@
               renderOverallBalances();
               alert('Ledger restored successfully!');
             }
-          } else {
-            alert('Invalid backup file format.');
-          }
-        } catch (err) {
-          alert('Error reading JSON file. Please ensure it is a valid CashBook backup.');
-        }
+          } else { alert('Invalid backup file format.'); }
+        } catch (err) { alert('Error reading JSON file. Please ensure it is a valid CashBook backup.'); }
       };
       reader.readAsText(file);
       event.target.value = '';
@@ -866,7 +733,7 @@
     }
 
     setDefaultDate();
-    updatePartySuggestions();
+    extractUniqueParties();
     renderOverallBalances();
   </script>
 </body>
