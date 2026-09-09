@@ -62,11 +62,14 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 2000;
       max-height: 200px; overflow-y: auto;
     }
-    .autocomplete-item {
-      padding: 14px 12px; font-size: 15px; border-bottom: 1px solid #e5e5ea; cursor: pointer; color: var(--text);
-    }
+    .autocomplete-item { padding: 14px 12px; font-size: 15px; border-bottom: 1px solid #e5e5ea; cursor: pointer; color: var(--text); }
     .autocomplete-item:last-child { border-bottom: none; }
     .autocomplete-item:active { background-color: #f2f2f7; }
+
+    /* Tabs for Ledger */
+    .tabs-container { display: flex; background: #e5e5ea; border-radius: 8px; padding: 2px; margin-bottom: 12px; }
+    .tab-btn { flex: 1; background: transparent; border: none; padding: 8px 0; font-size: 13px; font-weight: 600; color: var(--subtext); border-radius: 6px; cursor: pointer; transition: 0.2s; }
+    .tab-btn.active { background: #ffffff; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
 
     .search-container { position: relative; margin-bottom: 12px; }
     .search-input { padding-left: 36px !important; background-color: #f2f2f7 !important; border: 1px solid #e5e5ea !important; }
@@ -110,7 +113,7 @@
 
     @media print {
       body { background: #ffffff !important; padding: 0 !important; color: #000000 !important; }
-      .no-print, .bottom-nav, .balances, .card h3, .form-group, button, .btn-action-group, .action-icons, #txList, #partyList, .search-container { display: none !important; }
+      .no-print, .bottom-nav, .balances, .card h3, .form-group, button, .btn-action-group, .action-icons, #txList, #partyList, .search-container, .tabs-container { display: none !important; }
       .card { box-shadow: none !important; border-radius: 0 !important; padding: 0 !important; margin: 0 0 20px 0 !important; border: none !important; }
       .page-view { display: block !important; }
       #pageEntry, #pageTransactions { display: none !important; }
@@ -203,8 +206,15 @@
   <!-- PAGE 2: TRANSACTIONS / LEDGER -->
   <div id="pageTransactions" class="page-view">
     <div class="card">
-      <h3>All Transactions</h3>
+      <h3 id="txHeading">All Transactions</h3>
       
+      <!-- iOS Style Segmented Tabs -->
+      <div class="tabs-container">
+        <button id="tab-all" class="tab-btn active" onclick="setLedgerTab('all')">All</button>
+        <button id="tab-Cash" class="tab-btn" onclick="setLedgerTab('Cash')">Cash</button>
+        <button id="tab-Bank" class="tab-btn" onclick="setLedgerTab('Bank')">Bank</button>
+      </div>
+
       <div class="search-container">
         <span class="search-icon">🔍</span>
         <input 
@@ -329,6 +339,7 @@
     let entries = JSON.parse(localStorage.getItem('entries_data') || '[]');
     let editingIndex = -1;
     let uniquePartiesList = [];
+    let currentLedgerTab = 'all'; // State for Cash/Bank Tabs
 
     // CUSTOM AUTOCOMPLETE LOGIC
     function extractUniqueParties() {
@@ -361,9 +372,8 @@
           const div = document.createElement('div');
           div.className = 'autocomplete-item';
           div.textContent = match;
-          // Capture touch & mouse events efficiently for mobile
           div.onmousedown = function(e) {
-            e.preventDefault(); // Prevents input blur before click registers
+            e.preventDefault(); 
             input.value = match;
             dropdown.style.display = 'none';
           };
@@ -380,12 +390,10 @@
       }
     }
 
-    // Attach Autocomplete Listeners
     const partyInput = document.getElementById('party');
     partyInput.addEventListener('focus', renderPartySuggestions);
     partyInput.addEventListener('input', renderPartySuggestions);
     
-    // Hide dropdown if tapping outside
     document.addEventListener('click', function(e) {
       if (e.target.id !== 'party') {
         document.getElementById('customPartyDropdown').style.display = 'none';
@@ -399,7 +407,7 @@
 
     function saveEntries() {
       localStorage.setItem('entries_data', JSON.stringify(entries));
-      extractUniqueParties(); // Re-extract names when a new entry is saved
+      extractUniqueParties();
     }
 
     function switchPage(pageId, btnElement) {
@@ -409,6 +417,23 @@
       if (btnElement) btnElement.classList.add('active');
       if (pageId === 'pageTransactions') renderLedger();
       else if (pageId === 'pageReports') applyFilters();
+    }
+
+    // Cash / Bank Tabs Logic
+    function setLedgerTab(tab) {
+      currentLedgerTab = tab;
+      
+      document.getElementById('tab-all').classList.remove('active');
+      document.getElementById('tab-Cash').classList.remove('active');
+      document.getElementById('tab-Bank').classList.remove('active');
+      document.getElementById('tab-' + tab).classList.add('active');
+      
+      const heading = document.getElementById('txHeading');
+      if (tab === 'all') heading.innerText = 'All Transactions';
+      if (tab === 'Cash') heading.innerText = 'Cash Transactions';
+      if (tab === 'Bank') heading.innerText = 'Bank Transactions';
+
+      renderLedger();
     }
 
     function toggleCustomDates() {
@@ -435,6 +460,12 @@
 
       let displayEntries = entries.map((item, originalIdx) => ({ item, originalIdx }));
 
+      // 1. Filter by Tab (Cash/Bank)
+      if (currentLedgerTab !== 'all') {
+        displayEntries = displayEntries.filter(({ item }) => item.account === currentLedgerTab);
+      }
+
+      // 2. Filter by Search Query
       if (search) {
         displayEntries = displayEntries.filter(({ item }) => {
           const p = (item.party || '').toLowerCase();
