@@ -54,7 +54,6 @@
     .row-2 { display: flex; gap: 12px; width: 100%; align-items: flex-start; }
     .row-2 > div { flex: 1 1 0; min-width: 0; }
 
-    /* Custom Auto-Suggest Dropdown */
     .autocomplete-container { position: relative; }
     .autocomplete-dropdown {
       display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
@@ -66,7 +65,6 @@
     .autocomplete-item:last-child { border-bottom: none; }
     .autocomplete-item:active { background-color: #f2f2f7; }
 
-    /* Tabs for Ledger */
     .tabs-container { display: flex; background: #e5e5ea; border-radius: 8px; padding: 2px; margin-bottom: 12px; }
     .tab-btn { flex: 1; background: transparent; border: none; padding: 8px 0; font-size: 13px; font-weight: 600; color: var(--subtext); border-radius: 6px; cursor: pointer; transition: 0.2s; }
     .tab-btn.active { background: #ffffff; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
@@ -85,12 +83,21 @@
     button.btn-restore { flex: 1; background: #8e8e93; color: white; border: none; padding: 12px 6px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
     button:active { opacity: 0.8; }
 
-    .tx-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e5e5ea; }
+    /* Updated Transaction List Layout */
+    .tx-item { display: flex; flex-direction: column; padding: 14px 0; border-bottom: 1px solid #e5e5ea; }
     .tx-item:last-child { border-bottom: none; }
+    
+    .tx-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .tx-party { font-weight: 700; font-size: 16px; flex: 1; word-break: break-word; padding-right: 8px; }
+    .tx-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+    
+    .tx-bottom { margin-top: 6px; }
+    .tx-desc { font-size: 14px; color: #555555; margin-bottom: 4px; word-break: break-word; }
+    .tx-meta { font-size: 11px; color: var(--subtext); }
+
     .income { color: var(--green); font-weight: 700; }
     .expense { color: var(--red); font-weight: 700; }
     
-    .action-icons { display: flex; align-items: center; gap: 4px; }
     .btn-icon { background: none; border: none; padding: 4px 6px; font-size: 16px; cursor: pointer; }
     .btn-edit { color: var(--primary); }
     .btn-del { color: #c7c7cc; }
@@ -167,15 +174,9 @@
         </select>
       </div>
 
-      <!-- Custom Party Name Dropdown System -->
       <div class="form-group autocomplete-container">
         <label>Party / Account Name</label>
-        <input 
-          type="text" 
-          id="party" 
-          placeholder="Type or select existing party..." 
-          autocomplete="off"
-        >
+        <input type="text" id="party" placeholder="Type or select existing party..." autocomplete="off">
         <div id="customPartyDropdown" class="autocomplete-dropdown"></div>
       </div>
 
@@ -208,7 +209,6 @@
     <div class="card">
       <h3 id="txHeading">All Transactions</h3>
       
-      <!-- iOS Style Segmented Tabs -->
       <div class="tabs-container">
         <button id="tab-all" class="tab-btn active" onclick="setLedgerTab('all')">All</button>
         <button id="tab-Cash" class="tab-btn" onclick="setLedgerTab('Cash')">Cash</button>
@@ -217,14 +217,7 @@
 
       <div class="search-container">
         <span class="search-icon">🔍</span>
-        <input 
-          id="searchQuery" 
-          class="search-input" 
-          type="search" 
-          placeholder="Search party, remarks, amount..." 
-          autocomplete="off" 
-          oninput="renderLedger()"
-        >
+        <input id="searchQuery" class="search-input" type="search" placeholder="Search party, remarks, amount..." autocomplete="off" oninput="renderLedger()">
       </div>
 
       <div id="txList">No transactions recorded yet.</div>
@@ -339,9 +332,8 @@
     let entries = JSON.parse(localStorage.getItem('entries_data') || '[]');
     let editingIndex = -1;
     let uniquePartiesList = [];
-    let currentLedgerTab = 'all'; // State for Cash/Bank Tabs
+    let currentLedgerTab = 'all';
 
-    // CUSTOM AUTOCOMPLETE LOGIC
     function extractUniqueParties() {
       const seen = new Set();
       uniquePartiesList = [];
@@ -364,7 +356,6 @@
       const dropdown = document.getElementById('customPartyDropdown');
       
       dropdown.innerHTML = '';
-      
       const matches = uniquePartiesList.filter(p => p.toLowerCase().includes(val));
       
       if (matches.length > 0) {
@@ -372,16 +363,8 @@
           const div = document.createElement('div');
           div.className = 'autocomplete-item';
           div.textContent = match;
-          div.onmousedown = function(e) {
-            e.preventDefault(); 
-            input.value = match;
-            dropdown.style.display = 'none';
-          };
-          div.ontouchstart = function(e) {
-            e.preventDefault(); 
-            input.value = match;
-            dropdown.style.display = 'none';
-          };
+          div.onmousedown = function(e) { e.preventDefault(); input.value = match; dropdown.style.display = 'none'; };
+          div.ontouchstart = function(e) { e.preventDefault(); input.value = match; dropdown.style.display = 'none'; };
           dropdown.appendChild(div);
         });
         dropdown.style.display = 'block';
@@ -419,10 +402,8 @@
       else if (pageId === 'pageReports') applyFilters();
     }
 
-    // Cash / Bank Tabs Logic
     function setLedgerTab(tab) {
       currentLedgerTab = tab;
-      
       document.getElementById('tab-all').classList.remove('active');
       document.getElementById('tab-Cash').classList.remove('active');
       document.getElementById('tab-Bank').classList.remove('active');
@@ -460,12 +441,10 @@
 
       let displayEntries = entries.map((item, originalIdx) => ({ item, originalIdx }));
 
-      // 1. Filter by Tab (Cash/Bank)
       if (currentLedgerTab !== 'all') {
         displayEntries = displayEntries.filter(({ item }) => item.account === currentLedgerTab);
       }
 
-      // 2. Filter by Search Query
       if (search) {
         displayEntries = displayEntries.filter(({ item }) => {
           const p = (item.party || '').toLowerCase();
@@ -485,25 +464,28 @@
       displayEntries.slice().reverse().forEach(({ item, originalIdx }) => {
         const val = parseFloat(item.amount);
         const dateStr = new Date(item.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-        const descText = item.description ? ` • ${item.description}` : '';
 
+        /* Updated Stacked Layout for Transaction Items */
         list.innerHTML += `
           <div class="tx-item">
-            <div>
-              <strong>${item.party || 'Untitled'}</strong>
-              <div style="font-size: 11px; color: #8e8e93; margin-top: 2px;">
-                ${item.account}${descText} • ${dateStr}
-              </div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 4px;">
-              <span class="${item.type === 'in' ? 'income' : 'expense'}" style="margin-right: 4px;">
-                ${item.type === 'in' ? '+' : '-'}₹${val.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-              </span>
-              <div class="action-icons">
+            
+            <div class="tx-top">
+              <div class="tx-party">${item.party || 'Untitled'}</div>
+              
+              <div class="tx-actions">
+                <span class="${item.type === 'in' ? 'income' : 'expense'}" style="margin-right: 4px;">
+                  ${item.type === 'in' ? '+' : '-'}₹${val.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                </span>
                 <button class="btn-icon btn-edit" title="Edit Entry" onclick="startEdit(${originalIdx})">✎</button>
                 <button class="btn-icon btn-del" title="Delete Entry" onclick="deleteEntry(${originalIdx})">✕</button>
               </div>
             </div>
+
+            <div class="tx-bottom">
+              ${item.description ? `<div class="tx-desc">${item.description}</div>` : ''}
+              <div class="tx-meta">${item.account} • ${dateStr}</div>
+            </div>
+
           </div>`;
       });
     }
